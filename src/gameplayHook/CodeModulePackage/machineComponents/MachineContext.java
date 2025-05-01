@@ -1,14 +1,10 @@
 package gameplayHook.CodeModulePackage.machineComponents;
 
 import gameplayHook.CodeModulePackage.components.Action;
-import gameplayHook.CodeModulePackage.components.Constant;
-import gameplayHook.CodeModulePackage.components.Expression;
 import gameplayHook.CodeModulePackage.components.Variable;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class MachineContext {
     private final List<Variable> variables = new ArrayList<>();
@@ -25,11 +21,24 @@ public class MachineContext {
         return null;
     }
 
+    public void updateVar(String name, Object value) {
+        if(value == null) return;
+
+        for(Variable variable : variables) {
+            if(variable.name.equals(name)) {
+                if(variable.value.getClass().equals(value.getClass())) {
+                    variable.value = value;
+                }
+                break;
+            }
+        }
+    }
+
     public void setVar(Variable variable) {
         variables.add(variable);
     }
 
-    public Object getVar(String name) {
+    public Variable getVar(String name) {
         for(Variable variable : variables) {
             if(variable.name.equals(name)) return variable;
         }

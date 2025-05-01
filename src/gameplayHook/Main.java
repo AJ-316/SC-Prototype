@@ -4,6 +4,7 @@ import gameplayHook.CodeModulePackage.Runner;
 import gameplayHook.CodeModulePackage.components.*;
 import gameplayHook.CodeModulePackage.machineComponents.MachineContext;
 import gameplayHook.CodeModulePackage.statements.ActionStatement;
+import gameplayHook.CodeModulePackage.statements.AssignmentStatement;
 import gameplayHook.CodeModulePackage.statements.IfStatement;
 import gameplayHook.CodeModulePackage.statements.WhileStatement;
 
@@ -12,7 +13,43 @@ import java.util.List;
 public class Main {
 
     public static void main(String[] args) {
-        example2();
+        example3();
+    }
+
+    /**
+     * Variable Assignment with If Statement
+     * */
+    private static void example3() {
+        enum DroneAmmoType { LIGHT, HEAVY }
+
+        // IF drone.ammo == 20
+        Variable droneAmmo = new Variable("drone.ammo", 20);
+        Constant ammoThreshold = new Constant(20f);
+        Condition droneAmmoCondition = new Condition(droneAmmo, new KnowledgeToken(OperatorType.EQUALS), ammoThreshold);
+
+        Variable droneAmmoType = new Variable("drone.ammoType", DroneAmmoType.LIGHT);
+
+        // action
+        Action actionReload = new Action("drone.reload", List.of("drone.ammo"),
+                (expressions) -> System.out.println(expressions.getFirst().value instanceof Number ammo ? "Reloading: " + (expressions.getFirst().value = ammo.floatValue() + 1) : expressions.getFirst().value));
+
+        Assignment assignmentAmmoType = new Assignment(droneAmmoType, new Constant(DroneAmmoType.HEAVY));
+
+        // IF
+        IfStatement ifStmt = new IfStatement(droneAmmoCondition,
+                List.of(
+                    new ActionStatement(actionReload),
+                    new AssignmentStatement(assignmentAmmoType)),
+                null);
+
+        // runtime context
+        MachineContext context = new MachineContext();
+        context.setAction(actionReload);
+        context.setVar(droneAmmo);
+        context.setVar(droneAmmoType);
+
+        Runner runner = new Runner();
+        runner.run(ifStmt, context);
     }
 
     /**

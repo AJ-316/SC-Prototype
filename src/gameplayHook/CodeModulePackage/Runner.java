@@ -27,7 +27,7 @@ public class Runner {
         } else if (statement instanceof ActionStatement) {
             runAction((ActionStatement) statement, ctx);
         } else if (statement instanceof AssignmentStatement) {
-            runAssignment((AssignmentStatement) statement);
+            runAssignment((AssignmentStatement) statement, ctx);
         }
     }
 
@@ -51,7 +51,7 @@ public class Runner {
             return switch (compound.logicalOp.type) {
                 case AND -> leftResult && rightResult;
                 case OR -> leftResult || rightResult;
-                default -> throw new IllegalStateException(C_RED + "\t=> Invalid logical operator" + C_RESET);
+                default -> throw new IllegalStateException("Invalid logical operator");
             };
         } else {
             Object leftVal = resolveValue(cond.left, ctx);
@@ -66,7 +66,7 @@ public class Runner {
                 }
                 case GREATER_THAN -> toFloat(leftVal) > toFloat(rightVal);
                 case LESS_THAN -> toFloat(leftVal) < toFloat(rightVal);
-                default -> throw new IllegalStateException(C_RED + "\t=> Invalid comparison operator" + C_RESET);
+                default -> throw new IllegalStateException("Invalid comparison operator");
             };
         }
     }
@@ -92,19 +92,28 @@ public class Runner {
         }
 
         List<Variable> variables = new ArrayList<>();
-
-        for (String variable : action.arguments) {
-            Object varObj = ctx.getVar(variable);
-            if(varObj instanceof Variable) {
-                variables.add((Variable) varObj);
-            }
-        }
+        for (String variable : action.arguments)
+            variables.add(ctx.getVar(variable));
 
         action.doAction(variables);
     }
 
-    private void runAssignment(AssignmentStatement assignStmt) {
-        System.out.println("Assigning " + assignStmt.target.name + " = [value]");
+    private void runAssignment(AssignmentStatement assignStmt, MachineContext ctx) {
+        Object newValue = getExpressionValue(assignStmt.assignment.value);
+        if(newValue == null) throw new IllegalStateException("Null Value at Assignment");
+
+        Variable target = ctx.getVar(assignStmt.assignment.target.name);
+        Object preVal = target.value;
+        ctx.updateVar(assignStmt.assignment.target.name, getExpressionValue(assignStmt.assignment.value));
+
+        System.out.println(C_BLUE + "\t=> Assigning " + C_RESET + target.name + C_BLUE + "[" + C_RESET + preVal + C_BLUE + "]" +
+                " = " + C_CYAN + "[" + C_RESET + target.value + C_CYAN + "]" + C_RESET);
+    }
+
+    public Object getExpressionValue(Expression expression) {
+        if(expression instanceof Variable variable) return variable.value;
+        if(expression instanceof Constant constant) return constant.value;
+        return null;
     }
 
     private void runWhile(WhileStatement whileStmt, MachineContext ctx) {

@@ -1,9 +1,11 @@
 package gameplayHook.CodeModulePackage.statements;
 
-import gameplayHook.CodeModulePackage.components.Expression;
-import gameplayHook.CodeModulePackage.components.Variable;
+import gameplayHook.CodeModulePackage.components.Assignment;
 
 public class AssignmentStatement extends Statement {
-    public Variable target;
-    public Expression value;
+    public Assignment assignment;
+
+    public AssignmentStatement(Assignment assignment) {
+        this.assignment = assignment;
+    }
 }
