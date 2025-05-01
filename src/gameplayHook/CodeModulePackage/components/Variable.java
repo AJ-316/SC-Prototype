@@ -4,12 +4,15 @@ import gameplayHook.CodeModulePackage.machineComponents.MachineContext;
 
 public class Variable extends Expression {
     public String name;
+    public Object value;
 
-    public Variable(String name) {
+    public Variable(String name, Object value) {
         this.name = name;
+        this.value = value;
     }
 
-    public Object resolve(MachineContext ctx) {
-        return ctx.get(name);
+    public Object resolveValue(MachineContext ctx) {
+        if(!ctx.getVar(name).equals(this)) return null;
+        return value;
     }
 }
