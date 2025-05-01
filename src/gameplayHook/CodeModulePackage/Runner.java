@@ -4,10 +4,6 @@ import gameplayHook.CodeModulePackage.components.*;
 import gameplayHook.CodeModulePackage.machineComponents.MachineContext;
 import gameplayHook.CodeModulePackage.statements.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-
 public class Runner {
     public static final String C_RESET = "\u001B[0m";
     public static final String C_BLACK = "\u001B[30m";
@@ -32,7 +28,7 @@ public class Runner {
     }
 
     private void runIf(IfStatement ifStmt, MachineContext ctx) {
-        if (evaluateCondition(ifStmt.condition, ctx)) {
+        if (ifStmt.condition.evaluateBoolean(ctx)) {
             for (Statement stmt : ifStmt.thenBlock) {
                 run(stmt, ctx);
             }
@@ -41,40 +37,6 @@ public class Runner {
                 run(stmt, ctx);
             }
         }
-    }
-
-    private boolean evaluateCondition(Condition cond, MachineContext ctx) {
-        if (cond instanceof CompoundCondition compound) {
-            boolean leftResult = evaluateCondition(compound.left, ctx);
-            boolean rightResult = evaluateCondition(compound.right, ctx);
-
-            return switch (compound.logicalOp.type) {
-                case AND -> leftResult && rightResult;
-                case OR -> leftResult || rightResult;
-                default -> throw new IllegalStateException("Invalid logical operator");
-            };
-        } else {
-            Object leftVal = resolveValue(cond.left, ctx);
-            Object rightVal = resolveValue(cond.right, ctx);
-            System.out.println(C_PURPLE + "\t=> Evaluating condition: " + C_RESET + leftVal + " " + C_CYAN + cond.operator.type.name() + C_RESET + " " + rightVal);
-            return switch (cond.operator.type) {
-                case EQUALS -> {
-                    if (leftVal instanceof Number && rightVal instanceof Number) {
-                        yield toFloat(leftVal) == toFloat(rightVal);
-                    }
-                    yield Objects.equals(leftVal, rightVal);
-                }
-                case GREATER_THAN -> toFloat(leftVal) > toFloat(rightVal);
-                case LESS_THAN -> toFloat(leftVal) < toFloat(rightVal);
-                default -> throw new IllegalStateException("Invalid comparison operator");
-            };
-        }
-    }
-
-    private Object resolveValue(Expression expr, MachineContext ctx) {
-        if (expr instanceof Constant) return ((Constant) expr).value;
-        if (expr instanceof Variable) return ((Variable) expr).resolveValue(ctx);
-        throw new IllegalArgumentException("Unsupported expression type");
     }
 
     private float toFloat(Object val) {
@@ -86,38 +48,23 @@ public class Runner {
         System.out.println(C_GREEN + "\t=> Executing action: " + C_RESET + actionStmt.action.methodName);
 
         Action action = ctx.getAction(actionStmt.action.methodName);
-        if(action.arguments == null) {
-            action.doAction(null);
-            return;
-        }
-
-        List<Variable> variables = new ArrayList<>();
-        for (String variable : action.arguments)
-            variables.add(ctx.getVar(variable));
-
-        action.doAction(variables);
+        action.doAction(ctx);
     }
 
     private void runAssignment(AssignmentStatement assignStmt, MachineContext ctx) {
-        Object newValue = getExpressionValue(assignStmt.assignment.value);
-        if(newValue == null) throw new IllegalStateException("Null Value at Assignment");
+        Object newValue = assignStmt.assignment.value.evaluate(ctx);
+        if(newValue == null) throw new IllegalStateException("Null Value at Assignment: " + assignStmt.assignment.target.name);
 
         Variable target = ctx.getVar(assignStmt.assignment.target.name);
-        Object preVal = target.value;
-        ctx.updateVar(assignStmt.assignment.target.name, getExpressionValue(assignStmt.assignment.value));
+        Object preVal = target.getValue();
+        ctx.updateVar(assignStmt.assignment.target.name, newValue);
 
         System.out.println(C_BLUE + "\t=> Assigning " + C_RESET + target.name + C_BLUE + "[" + C_RESET + preVal + C_BLUE + "]" +
-                " = " + C_CYAN + "[" + C_RESET + target.value + C_CYAN + "]" + C_RESET);
-    }
-
-    public Object getExpressionValue(Expression expression) {
-        if(expression instanceof Variable variable) return variable.value;
-        if(expression instanceof Constant constant) return constant.value;
-        return null;
+                " = " + C_CYAN + "[" + C_RESET + target.getValue() + C_CYAN + "]" + C_RESET);
     }
 
     private void runWhile(WhileStatement whileStmt, MachineContext ctx) {
-        while (evaluateCondition(whileStmt.condition, ctx)) {
+        while (whileStmt.condition.evaluateBoolean(ctx)) {
             for (Statement stmt : whileStmt.body) {
                 run(stmt, ctx);
             }

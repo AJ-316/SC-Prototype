@@ -1,14 +1,23 @@
 package gameplayHook.CodeModulePackage.components;
 
-public class CompoundCondition extends Condition {
-    public Condition left;
-    public KnowledgeToken logicalOp; // AND | OR
-    public Condition right;
+import gameplayHook.CodeModulePackage.machineComponents.MachineContext;
 
-    public CompoundCondition(Condition left, KnowledgeToken logicalOp, Condition right) {
-        super(null, null, null);
+public class CompoundCondition extends BooleanExpression {
+    public BooleanExpression left, right;
+    public KnowledgeToken logicalOp;
+
+    public CompoundCondition(BooleanExpression left, BooleanExpression right, KnowledgeToken logicalOp) {
         this.left = left;
-        this.logicalOp = logicalOp;
         this.right = right;
+        this.logicalOp = logicalOp;
+    }
+
+    @Override
+    public Object evaluate(MachineContext ctx) {
+        return switch (logicalOp.type) {
+            case AND -> left.evaluateBoolean(ctx) && right.evaluateBoolean(ctx);
+            case OR -> left.evaluateBoolean(ctx) || right.evaluateBoolean(ctx);
+            default -> throw new IllegalStateException("Invalid logical operator");
+        };
     }
 }
