@@ -1,4 +1,9 @@
 package gameplayHook.CodeModulePackage.statements;
 
-public abstract class Statement {
+import gameplayHook.MachinePackage.components.MachineContext;
+
+public interface Statement {
+
+    void run(MachineContext ctx);
+
 }

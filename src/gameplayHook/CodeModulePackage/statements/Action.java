@@ -1,14 +1,15 @@
-package gameplayHook.CodeModulePackage.components;
+package gameplayHook.CodeModulePackage.statements;
 
-import gameplayHook.CodeModulePackage.machineComponents.MachineContext;
+import gameplayHook.CodeModulePackage.components.expressions.Variable;
+import gameplayHook.MachinePackage.components.MachineContext;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class Action {
-    public String methodName;
-    public ActionMethod method;
-    public List<String> arguments;
+    private final String methodName;
+    private final ActionMethod method;
+    private final List<String> arguments;
 
     public Action(String methodName, List<String> arguments, ActionMethod method) {
         this.methodName = methodName;
@@ -16,8 +17,8 @@ public class Action {
         this.method = method;
     }
 
-    public void doAction(MachineContext ctx) {
-        if(arguments == null) {
+    public void run(MachineContext ctx) {
+        if (arguments == null) {
             method.run(null);
             return;
         }
@@ -29,9 +30,13 @@ public class Action {
         method.run(variables);
     }
 
+    public String getName() {
+        return methodName;
+    }
+
     public interface ActionMethod {
         // Might just replace List of variables with the actual Machine Context
-        // This can negate the creation of list of variables but gives access to the whole Machine
+        // This can negate the creation of list of variables but will give access to the whole Machine
         void run(List<Variable> arguments);
     }
 }

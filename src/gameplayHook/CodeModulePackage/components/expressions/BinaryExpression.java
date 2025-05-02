@@ -1,6 +1,7 @@
-package gameplayHook.CodeModulePackage.components;
+package gameplayHook.CodeModulePackage.components.expressions;
 
-import gameplayHook.CodeModulePackage.machineComponents.MachineContext;
+import gameplayHook.CodeModulePackage.components.tokens.KnowledgeToken;
+import gameplayHook.MachinePackage.components.MachineContext;
 
 public class BinaryExpression extends Expression {
     public Expression left;

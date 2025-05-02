@@ -1,4 +1,7 @@
-package gameplayHook.CodeModulePackage.components;
+package gameplayHook.CodeModulePackage.statements;
+
+import gameplayHook.CodeModulePackage.components.expressions.Expression;
+import gameplayHook.CodeModulePackage.components.expressions.Variable;
 
 public class Assignment {
     public Variable target;

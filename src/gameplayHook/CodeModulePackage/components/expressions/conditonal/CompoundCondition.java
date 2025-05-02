@@ -1,6 +1,7 @@
-package gameplayHook.CodeModulePackage.components;
+package gameplayHook.CodeModulePackage.components.expressions.conditonal;
 
-import gameplayHook.CodeModulePackage.machineComponents.MachineContext;
+import gameplayHook.CodeModulePackage.components.tokens.KnowledgeToken;
+import gameplayHook.MachinePackage.components.MachineContext;
 
 public class CompoundCondition extends BooleanExpression {
     public BooleanExpression left, right;

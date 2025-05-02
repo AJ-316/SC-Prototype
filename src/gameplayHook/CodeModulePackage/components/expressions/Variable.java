@@ -1,6 +1,6 @@
-package gameplayHook.CodeModulePackage.components;
+package gameplayHook.CodeModulePackage.components.expressions;
 
-import gameplayHook.CodeModulePackage.machineComponents.MachineContext;
+import gameplayHook.MachinePackage.components.MachineContext;
 
 public class Variable extends Expression {
     public String name;
@@ -17,11 +17,11 @@ public class Variable extends Expression {
         return variable != null ? variable.value : null;
     }
 
-    public void setValue(Object value) {
-        this.value = value;
-    }
-
     public Object getValue() {
         return value;
+    }
+
+    public void setValue(Object value) {
+        this.value = value;
     }
 }

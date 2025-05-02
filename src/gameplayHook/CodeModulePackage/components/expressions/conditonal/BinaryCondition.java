@@ -1,10 +1,12 @@
-package gameplayHook.CodeModulePackage.components;
+package gameplayHook.CodeModulePackage.components.expressions.conditonal;
 
-import gameplayHook.CodeModulePackage.machineComponents.MachineContext;
+import gameplayHook.CodeModulePackage.components.expressions.Expression;
+import gameplayHook.CodeModulePackage.components.tokens.KnowledgeToken;
+import gameplayHook.MachinePackage.components.MachineContext;
 
 import java.util.Objects;
 
-import static gameplayHook.CodeModulePackage.Runner.*;
+import static gameplayHook.CodeModulePackage.CodeModule.*;
 
 public class BinaryCondition extends BooleanExpression {
 

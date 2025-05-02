@@ -1,25 +1,11 @@
-package gameplayHook.CodeModulePackage.machineComponents;
+package gameplayHook.MachinePackage.components;
 
-import gameplayHook.CodeModulePackage.components.Action;
-import gameplayHook.CodeModulePackage.components.Variable;
-
-import java.util.ArrayList;
-import java.util.List;
+import gameplayHook.CodeModulePackage.components.expressions.Variable;
+import gameplayHook.CodeModulePackage.statements.Action;
 
 public class MachineContext {
-    private final List<Variable> variables = new ArrayList<>();
-    private final List<Action> actions = new ArrayList<>();
-
-    public void setAction(Action action) {
-        actions.add(action);
-    }
-
-    public Action getAction(String name) {
-        for(Action action : actions) {
-            if(action.methodName.equals(name)) return action;
-        }
-        return null;
-    }
+    private Variable[] variables;
+    private Action[] actions;
 
     public void updateVar(String name, Object value) {
         if (value == null) return;
@@ -54,13 +40,24 @@ public class MachineContext {
         }
     }
 
-    public void setVar(Variable variable) {
-        variables.add(variable);
+    public void setVars(Variable... variables) {
+        this.variables = variables;
+    }
+
+    public void setActions(Action... actions) {
+        this.actions = actions;
     }
 
     public Variable getVar(String name) {
-        for(Variable variable : variables) {
-            if(variable.name.equals(name)) return variable;
+        for (Variable variable : variables) {
+            if (variable.name.equals(name)) return variable;
+        }
+        return null;
+    }
+
+    public Action getAction(String name) {
+        for (Action action : actions) {
+            if (action.getName().equals(name)) return action;
         }
         return null;
     }

@@ -1,4 +1,4 @@
-package gameplayHook.CodeModulePackage.components;
+package gameplayHook.CodeModulePackage.components.tokens;
 
 public class KnowledgeToken {
     public OperatorType type;

@@ -1,4 +1,4 @@
-package gameplayHook.CodeModulePackage.components;
+package gameplayHook.CodeModulePackage.components.tokens;
 
 public enum OperatorType {
     // COMPARE
@@ -8,7 +8,7 @@ public enum OperatorType {
     AND, OR,
 
     // UNARY
-    NOT, NEGATE,
+    NONE, NOT, NEGATE,
 
     // ARITHMETIC
     ADD, SUBTRACT, MULTIPLY, DIVIDE

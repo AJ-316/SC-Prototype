@@ -1,24 +1,54 @@
 package gameplayHook;
 
-import gameplayHook.CodeModulePackage.Runner;
-import gameplayHook.CodeModulePackage.components.*;
-import gameplayHook.CodeModulePackage.machineComponents.MachineContext;
+import gameplayHook.CodeModulePackage.CodeModule;
+import gameplayHook.CodeModulePackage.components.expressions.BinaryExpression;
+import gameplayHook.CodeModulePackage.components.expressions.Constant;
+import gameplayHook.CodeModulePackage.components.expressions.UnaryExpression;
+import gameplayHook.CodeModulePackage.components.expressions.Variable;
+import gameplayHook.CodeModulePackage.components.expressions.conditonal.BinaryCondition;
+import gameplayHook.CodeModulePackage.components.expressions.conditonal.CompoundCondition;
+import gameplayHook.CodeModulePackage.components.expressions.conditonal.UnaryCondition;
+import gameplayHook.CodeModulePackage.components.tokens.KnowledgeToken;
+import gameplayHook.CodeModulePackage.components.tokens.OperatorType;
+import gameplayHook.CodeModulePackage.statements.Action;
 import gameplayHook.CodeModulePackage.statements.ActionStatement;
+import gameplayHook.CodeModulePackage.statements.Assignment;
 import gameplayHook.CodeModulePackage.statements.AssignmentStatement;
-import gameplayHook.CodeModulePackage.statements.IfStatement;
-import gameplayHook.CodeModulePackage.statements.WhileStatement;
+import gameplayHook.MachinePackage.components.MachineContext;
+import gameplayHook.MachinePackage.machines.Door;
 
 import java.util.List;
 
 public class Main {
 
     public static void main(String[] args) {
-        example5();
+        example6();
     }
 
     /**
-     * Unary Operator with If Statement
-     * */
+     * Machine Model - Example: <br/>
+     * <li>Door</li>
+     * <li><b>IF</b> door is not open <br/>
+     * <b>THEN</b> open the door</li>
+     */
+    private static void example6() {
+        Door door = new Door();
+
+        CodeModule codeModule = new CodeModule();
+        codeModule.createIfStatement(new UnaryCondition(new UnaryExpression(door.getCtx().getVar(Door.KV_IS_OPEN), new KnowledgeToken(OperatorType.NOT))),
+                List.of(ActionStatement.create(door.getCtx().getAction(Door.KA_OPEN))));
+
+        door.attachCodeModule(codeModule);
+        door.executeCodeModules();
+    }
+
+    /**
+     * Unary Operator - Example: <br/>
+     * <li>Station</li>
+     * <li><b>IF</b> station's shield is not active <br/>
+     * <b>THEN</b> activate shield <br/>
+     * <b>ELSE</b> deactivate shield</li>
+     */
     private static void example5() {
         Variable stationShieldActive = new Variable("station.shieldActive", false);
         Action stationShieldOn = new Action("station.shieldOn", List.of("station.shieldActive"), (exprs) -> {
@@ -32,22 +62,29 @@ public class Main {
 
         UnaryCondition condition = new UnaryCondition(new UnaryExpression(stationShieldActive, new KnowledgeToken(OperatorType.NOT)));
 
-        IfStatement ifStatement = new IfStatement(condition, List.of(new ActionStatement(stationShieldOn)), List.of(new ActionStatement(stationShieldOff)));
+        CodeModule codeModule = new CodeModule();
+        // IF
+        codeModule.createIfElseStatement(condition,
+                List.of(ActionStatement.create(stationShieldOn)),
+                List.of(ActionStatement.create(stationShieldOff)));
 
-        MachineContext ctx = new MachineContext();
-        ctx.setAction(stationShieldOn);
-        ctx.setAction(stationShieldOff);
-        ctx.setVar(stationShieldActive);
+        MachineContext context = new MachineContext();
+        context.setActions(stationShieldOn, stationShieldOff);
+        context.setVars(stationShieldActive);
 
-        Runner runner = new Runner();
-        runner.run(ifStatement, ctx);
+        codeModule.checkStatements(context);
+        codeModule.checkStatements(context);
     }
 
     /**
-     * Binary Expression with If Statement
-     * */
+     * Binary Expression - Example: <br/>
+     * <li>Turret</li>
+     * <li><b>IF</b> turret has >= 5 targets in view <br/>
+     * <b>THEN</b> mode = burst and burstCapacity = (targets in view)/2 <br/>
+     * <b>ELSE</b> mode = single </li>
+     */
     private static void example4() {
-        enum TurretMode { SINGLE, BURST }
+        enum TurretMode {SINGLE, BURST}
 
         /*  If turret has targets more or equal to 5 in view
             Then set the mode to Burst and calculate Burst Capacity = targetsInView / 2
@@ -79,34 +116,29 @@ public class Main {
         // turretMode = SINGLE
         Assignment assignmentModeSingle = new Assignment(turretMode, new Constant(TurretMode.SINGLE));
 
-        // turretMode = SINGLE
+        // burstCapacity = targetsInView / 2
         Assignment assignmentBurstCapacity = new Assignment(turretBurstCapacity, new BinaryExpression(turretTargetsInView, new Constant(2), new KnowledgeToken(OperatorType.DIVIDE)));
 
+        CodeModule codeModule = new CodeModule();
         // IF
-        IfStatement ifStmt = new IfStatement(condition,
-                List.of(
-                        new AssignmentStatement(assignmentBurstCapacity),
-                        new AssignmentStatement(assignmentModeBurst)),
-                List.of(
-                        new AssignmentStatement(assignmentModeSingle)
-                ));
+        codeModule.createIfElseStatement(condition,
+                List.of(AssignmentStatement.create(assignmentBurstCapacity), AssignmentStatement.create(assignmentModeBurst)),
+                List.of(AssignmentStatement.create(assignmentModeSingle)));
 
         // runtime context
         MachineContext context = new MachineContext();
-        context.setVar(turretAmmo);
-        context.setVar(turretMode);
-        context.setVar(turretBurstCapacity);
-        context.setVar(turretTargetsInView);
-
-        Runner runner = new Runner();
-        runner.run(ifStmt, context);
+        context.setVars(turretAmmo, turretMode, turretBurstCapacity, turretTargetsInView);
+        codeModule.checkStatements(context);
     }
 
     /**
-     * Variable Assignment with If Statement
-     * */
+     * Variable Assignment - Example: <br/>
+     * <li>Drone</li>
+     * <li><b>IF</b> drone has ammo <= 20 <br/>
+     * <b>THEN</b> ammoType = HEAVY </li>
+     */
     private static void example3() {
-        enum DroneAmmoType { LIGHT, HEAVY }
+        enum DroneAmmoType {LIGHT, HEAVY}
 
         // IF drone.ammo <= 5
         Variable droneAmmo = new Variable("drone.ammo", 20);
@@ -117,21 +149,23 @@ public class Main {
 
         Assignment assignmentAmmoType = new Assignment(droneAmmoType, new Constant(DroneAmmoType.HEAVY));
 
+        CodeModule codeModule = new CodeModule();
         // IF
-        IfStatement ifStmt = new IfStatement(droneAmmoCondition, List.of(new AssignmentStatement(assignmentAmmoType)), null);
+        codeModule.createIfStatement(droneAmmoCondition,
+                List.of(AssignmentStatement.create(assignmentAmmoType)));
 
         // runtime context
         MachineContext context = new MachineContext();
-        context.setVar(droneAmmo);
-        context.setVar(droneAmmoType);
-
-        Runner runner = new Runner();
-        runner.run(ifStmt, context);
+        context.setVars(droneAmmo, droneAmmoType);
+        codeModule.checkStatements(context);
     }
 
     /**
-     * While Statement with modification of variable
-     * */
+     * While Statement - Example: <br/>
+     * <li>Drone</li>
+     * <li><b>WHILE</b> drone has ammo < 20 <br/>
+     * <b>DO</b> reload ammo (one at a time) </li>
+     */
     private static void example2() {
         // WHILE drone.ammo < 20
         Variable droneAmmo = new Variable("drone.ammo", 15);
@@ -146,25 +180,26 @@ public class Main {
                         System.out.println("Reloading: " + expressions.getFirst().getValue());
                     } else System.out.println(expressions.getFirst().getValue());
                 });
-        ActionStatement actionStmt = new ActionStatement(action);
 
+        CodeModule codeModule = new CodeModule();
         // WHILE
-        WhileStatement whileStatement = new WhileStatement(droneAmmoCondition, List.of(actionStmt));
+        codeModule.createWhileStatement(droneAmmoCondition, List.of(ActionStatement.create(action)));
 
         // runtime context
         MachineContext context = new MachineContext();
-        context.setAction(action);
-        context.setVar(droneAmmo);
+        context.setActions(action);
+        context.setVars(droneAmmo);
 
-        Runner runner = new Runner();
-        runner.run(whileStatement, context);
+        codeModule.checkStatements(context);
     }
 
     /**
-     * Compound Condition with If Statement <br/>
-     * 1) >= <br/>
-     * 2) == <br/>
-     * */
+     * Compound Condition - Example: <br/>
+     * <li>Drone</li>
+     * <li><b>IF</b> (drone has 20 ammo) <b>AND</b> (drone's power >= 50) <br/>
+     * <b>THEN</b> turn off drone's flashlight <br/>
+     * <b>ELSE</b> turn on drone's flashlight </li>
+     */
     private static void example1() {
         // IF drone.ammo == 20
         Variable droneAmmo = new Variable("drone.ammo", 20);
@@ -181,19 +216,17 @@ public class Main {
         // action
         Action actionFlashlightOn = new Action("drone.flashlight.on", null, (_) -> System.out.println("Flashlight Turned ON"));
         Action actionFlashlightOff = new Action("drone.flashlight.off", null, (_) -> System.out.println("Flashlight Turned OFF"));
+
+        CodeModule codeModule = new CodeModule();
         // IF
-        IfStatement ifStmt = new IfStatement(condition,
-                List.of(new ActionStatement(actionFlashlightOff)),
-                List.of(new ActionStatement(actionFlashlightOn)));
+        codeModule.createIfElseStatement(condition,
+                List.of(ActionStatement.create(actionFlashlightOff)),
+                List.of(ActionStatement.create(actionFlashlightOn)));
 
         // runtime context
         MachineContext context = new MachineContext();
-        context.setAction(actionFlashlightOn);
-        context.setAction(actionFlashlightOff);
-        context.setVar(dronePower);
-        context.setVar(droneAmmo);
-
-        Runner runner = new Runner();
-        runner.run(ifStmt, context);
+        context.setActions(actionFlashlightOn, actionFlashlightOff);
+        context.setVars(dronePower, droneAmmo);
+        codeModule.checkStatements(context);
     }
 }

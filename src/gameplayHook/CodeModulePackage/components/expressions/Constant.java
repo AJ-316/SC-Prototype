@@ -1,6 +1,6 @@
-package gameplayHook.CodeModulePackage.components;
+package gameplayHook.CodeModulePackage.components.expressions;
 
-import gameplayHook.CodeModulePackage.machineComponents.MachineContext;
+import gameplayHook.MachinePackage.components.MachineContext;
 
 public class Constant extends Expression {
     private final Object value;
