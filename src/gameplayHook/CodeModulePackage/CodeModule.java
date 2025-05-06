@@ -5,6 +5,7 @@ import gameplayHook.CodeModulePackage.statements.ConditionalStatement;
 import gameplayHook.CodeModulePackage.statements.IfStatement;
 import gameplayHook.CodeModulePackage.statements.Statement;
 import gameplayHook.CodeModulePackage.statements.WhileStatement;
+import gameplayHook.MachinePackage.TriggerType;
 import gameplayHook.MachinePackage.components.MachineContext;
 
 import java.util.ArrayList;
@@ -19,21 +20,30 @@ public class CodeModule {
     public static final String C_CYAN = "\u001B[36m";
 
     private final List<ConditionalStatement> statements = new ArrayList<>();
+    private final TriggerType triggerType;
 
-    public void checkStatements(MachineContext ctx) {
+    public CodeModule(TriggerType triggerType) {
+        this.triggerType = triggerType;
+    }
+
+    public void runIfTriggered(MachineContext ctx, TriggerType triggerType) {
+        if(!isTriggerType(triggerType)) return;
+
         for (ConditionalStatement statement : statements) {
             statement.run(ctx);
         }
     }
 
+    public boolean isTriggerType(TriggerType triggerType) {
+        return this.triggerType == triggerType;
+    }
+
     public void createIfStatement(BooleanExpression booleanExpression, List<Statement> thenBlock) {
-        IfStatement ifStatement = new IfStatement(booleanExpression, thenBlock, null);
-        statements.add(ifStatement);
+        statements.add(new IfStatement(booleanExpression, thenBlock, null));
     }
 
     public void createIfElseStatement(BooleanExpression booleanExpression, List<Statement> thenBlock, List<Statement> elseBlock) {
-        IfStatement ifStatement = new IfStatement(booleanExpression, thenBlock, elseBlock);
-        statements.add(ifStatement);
+        statements.add(new IfStatement(booleanExpression, thenBlock, elseBlock));
     }
 
     public void createIfElifStatement(List<BooleanExpression> booleanExpressions, List<List<Statement>> thenBlocks, List<Statement> elseBlock) {
@@ -53,5 +63,6 @@ public class CodeModule {
 
     public void createWhileStatement(BooleanExpression booleanExpression, List<Statement> actionStmt) {
         WhileStatement whileStatement = new WhileStatement(booleanExpression, actionStmt);
+        statements.add(whileStatement);
     }
 }

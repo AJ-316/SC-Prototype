@@ -24,7 +24,7 @@ public class UnaryExpression extends Expression {
                     throw new IllegalArgumentException("Unary operator(NONE) requires a Boolean value");
                 }
                 System.out.println(C_PURPLE + "\t=> Evaluating condition: " + C_RESET +
-                        (operand instanceof Variable ? ((Variable) operand).name : "") + C_CYAN + "[" + C_RESET + value + C_CYAN + "]" + C_RESET);
+                        (operand instanceof Variable ? ((Variable) operand).getName() : "") + C_CYAN + "[" + C_RESET + value + C_CYAN + "]" + C_RESET);
                 yield (Boolean) value;
             }
             case NOT -> {
@@ -32,7 +32,7 @@ public class UnaryExpression extends Expression {
                     throw new IllegalArgumentException("Unary operator(NOT) requires a Boolean value");
                 }
                 System.out.println(C_PURPLE + "\t=> Evaluating condition: " + C_CYAN + "!" + C_RESET +
-                        (operand instanceof Variable ? ((Variable) operand).name : "") + C_CYAN + "[" + C_RESET + value + C_CYAN + "]" + C_RESET);
+                        (operand instanceof Variable ? ((Variable) operand).getName() : "") + C_CYAN + "[" + C_RESET + value + C_CYAN + "]" + C_RESET);
                 yield !(Boolean) value;
             }
             case NEGATE -> {

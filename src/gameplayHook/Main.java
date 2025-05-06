@@ -14,40 +14,78 @@ import gameplayHook.CodeModulePackage.statements.Action;
 import gameplayHook.CodeModulePackage.statements.ActionStatement;
 import gameplayHook.CodeModulePackage.statements.Assignment;
 import gameplayHook.CodeModulePackage.statements.AssignmentStatement;
+import gameplayHook.MachinePackage.TriggerType;
 import gameplayHook.MachinePackage.components.MachineContext;
 import gameplayHook.MachinePackage.machines.Door;
+import gameplayHook.MachinePackage.machines.TestMachine;
+import gameplayHook.MachinePackage.machines.Turret;
+import gameplayHook.SimUIPackage.SimulatorWindow;
 
 import java.util.List;
 
 public class Main {
 
     public static void main(String[] args) {
+        SimulatorWindow.init();
         example6();
+        example7();
+        TestMachine testMachine = new TestMachine("TestMachine");
+    }
+
+    /**
+     * Machine Model - Example: <br/>
+     * @see #example4()
+     * */
+    private static void example7() {
+        Turret turret = new Turret();
+
+        Variable targetsInView = turret.getCtx().getVar(Turret.KV_TARGETS_IN_VIEW);
+        Variable turretMode = turret.getCtx().getVar(Turret.KV_MODE);
+
+        // targets >= 5
+        BinaryCondition shouldBurst = new BinaryCondition(targetsInView, new Constant(5), new KnowledgeToken(OperatorType.GREATER_OR_EQUALS));
+
+        CodeModule codeModule = new CodeModule(TriggerType.MANUAL);
+        // IF ELSE
+        codeModule.createIfElseStatement(shouldBurst,
+                List.of(
+                        // Assign burstCapacity = targets / 2
+                        AssignmentStatement.create(new Assignment(turret.getCtx().getVar(Turret.KV_BURST_CAPACITY),
+                                new BinaryExpression(targetsInView, new Constant(2), new KnowledgeToken(OperatorType.DIVIDE)))),
+                        // Set Mode to BURST
+                        AssignmentStatement.create(new Assignment(turretMode, new Constant(Turret.TurretMode.BURST)))),
+                List.of(
+                        // Set Mode to SINGLE
+                        AssignmentStatement.create(new Assignment(turretMode, new Constant(Turret.TurretMode.SINGLE))))
+        );
+
+        turret.attachCodeModule(codeModule);
+        turret.executeCodeModules(TriggerType.MANUAL);
     }
 
     /**
      * Machine Model - Example: <br/>
      * <li>Door</li>
-     * <li><b>IF</b> door is not open <br/>
-     * <b>THEN</b> open the door</li>
+     * <code><b>IF</b> door is not open <br/>
+     * <b>THEN</b> open the door</code>
      */
-    private static void example6() {
+    public static void example6() {
         Door door = new Door();
 
-        CodeModule codeModule = new CodeModule();
+        CodeModule codeModule = new CodeModule(TriggerType.MANUAL);
         codeModule.createIfStatement(new UnaryCondition(new UnaryExpression(door.getCtx().getVar(Door.KV_IS_OPEN), new KnowledgeToken(OperatorType.NOT))),
                 List.of(ActionStatement.create(door.getCtx().getAction(Door.KA_OPEN))));
 
         door.attachCodeModule(codeModule);
-        door.executeCodeModules();
+        door.executeCodeModules(TriggerType.MANUAL);
     }
 
     /**
      * Unary Operator - Example: <br/>
      * <li>Station</li>
-     * <li><b>IF</b> station's shield is not active <br/>
+     * <code><b>IF</b> station's shield is not active <br/>
      * <b>THEN</b> activate shield <br/>
-     * <b>ELSE</b> deactivate shield</li>
+     * <b>ELSE</b> deactivate shield</code>
      */
     private static void example5() {
         Variable stationShieldActive = new Variable("station.shieldActive", false);
@@ -62,26 +100,26 @@ public class Main {
 
         UnaryCondition condition = new UnaryCondition(new UnaryExpression(stationShieldActive, new KnowledgeToken(OperatorType.NOT)));
 
-        CodeModule codeModule = new CodeModule();
+        CodeModule codeModule = new CodeModule(TriggerType.MANUAL);
         // IF
         codeModule.createIfElseStatement(condition,
                 List.of(ActionStatement.create(stationShieldOn)),
                 List.of(ActionStatement.create(stationShieldOff)));
 
-        MachineContext context = new MachineContext();
+        MachineContext context = new MachineContext("station");
         context.setActions(stationShieldOn, stationShieldOff);
         context.setVars(stationShieldActive);
 
-        codeModule.checkStatements(context);
-        codeModule.checkStatements(context);
+        codeModule.runIfTriggered(context, TriggerType.MANUAL);
+        codeModule.runIfTriggered(context, TriggerType.MANUAL);
     }
 
     /**
      * Binary Expression - Example: <br/>
      * <li>Turret</li>
-     * <li><b>IF</b> turret has >= 5 targets in view <br/>
+     * <code><b>IF</b> turret has >= 5 targets in view <br/>
      * <b>THEN</b> mode = burst and burstCapacity = (targets in view)/2 <br/>
-     * <b>ELSE</b> mode = single </li>
+     * <b>ELSE</b> mode = single </code>
      */
     private static void example4() {
         enum TurretMode {SINGLE, BURST}
@@ -119,23 +157,23 @@ public class Main {
         // burstCapacity = targetsInView / 2
         Assignment assignmentBurstCapacity = new Assignment(turretBurstCapacity, new BinaryExpression(turretTargetsInView, new Constant(2), new KnowledgeToken(OperatorType.DIVIDE)));
 
-        CodeModule codeModule = new CodeModule();
+        CodeModule codeModule = new CodeModule(TriggerType.MANUAL);
         // IF
         codeModule.createIfElseStatement(condition,
                 List.of(AssignmentStatement.create(assignmentBurstCapacity), AssignmentStatement.create(assignmentModeBurst)),
                 List.of(AssignmentStatement.create(assignmentModeSingle)));
 
         // runtime context
-        MachineContext context = new MachineContext();
+        MachineContext context = new MachineContext("turret");
         context.setVars(turretAmmo, turretMode, turretBurstCapacity, turretTargetsInView);
-        codeModule.checkStatements(context);
+        codeModule.runIfTriggered(context, TriggerType.MANUAL);
     }
 
     /**
      * Variable Assignment - Example: <br/>
      * <li>Drone</li>
-     * <li><b>IF</b> drone has ammo <= 20 <br/>
-     * <b>THEN</b> ammoType = HEAVY </li>
+     * <code><b>IF</b> drone has ammo <= 20 <br/>
+     * <b>THEN</b> ammoType = HEAVY </code>
      */
     private static void example3() {
         enum DroneAmmoType {LIGHT, HEAVY}
@@ -149,22 +187,22 @@ public class Main {
 
         Assignment assignmentAmmoType = new Assignment(droneAmmoType, new Constant(DroneAmmoType.HEAVY));
 
-        CodeModule codeModule = new CodeModule();
+        CodeModule codeModule = new CodeModule(TriggerType.MANUAL);
         // IF
         codeModule.createIfStatement(droneAmmoCondition,
                 List.of(AssignmentStatement.create(assignmentAmmoType)));
 
         // runtime context
-        MachineContext context = new MachineContext();
+        MachineContext context = new MachineContext("drone");
         context.setVars(droneAmmo, droneAmmoType);
-        codeModule.checkStatements(context);
+        codeModule.runIfTriggered(context, TriggerType.MANUAL);
     }
 
     /**
      * While Statement - Example: <br/>
      * <li>Drone</li>
-     * <li><b>WHILE</b> drone has ammo < 20 <br/>
-     * <b>DO</b> reload ammo (one at a time) </li>
+     * <code><b>WHILE</b> drone has ammo < 20 <br/>
+     * <b>DO</b> reload ammo (one at a time) </code>
      */
     private static void example2() {
         // WHILE drone.ammo < 20
@@ -181,24 +219,24 @@ public class Main {
                     } else System.out.println(expressions.getFirst().getValue());
                 });
 
-        CodeModule codeModule = new CodeModule();
+        CodeModule codeModule = new CodeModule(TriggerType.MANUAL);
         // WHILE
         codeModule.createWhileStatement(droneAmmoCondition, List.of(ActionStatement.create(action)));
 
         // runtime context
-        MachineContext context = new MachineContext();
+        MachineContext context = new MachineContext("drone");
         context.setActions(action);
         context.setVars(droneAmmo);
 
-        codeModule.checkStatements(context);
+        codeModule.runIfTriggered(context, TriggerType.MANUAL);
     }
 
     /**
      * Compound Condition - Example: <br/>
      * <li>Drone</li>
-     * <li><b>IF</b> (drone has 20 ammo) <b>AND</b> (drone's power >= 50) <br/>
+     * <code><b>IF</b> (drone has 20 ammo) <b>AND</b> (drone's power >= 50) <br/>
      * <b>THEN</b> turn off drone's flashlight <br/>
-     * <b>ELSE</b> turn on drone's flashlight </li>
+     * <b>ELSE</b> turn on drone's flashlight </code>
      */
     private static void example1() {
         // IF drone.ammo == 20
@@ -217,16 +255,16 @@ public class Main {
         Action actionFlashlightOn = new Action("drone.flashlight.on", null, (_) -> System.out.println("Flashlight Turned ON"));
         Action actionFlashlightOff = new Action("drone.flashlight.off", null, (_) -> System.out.println("Flashlight Turned OFF"));
 
-        CodeModule codeModule = new CodeModule();
+        CodeModule codeModule = new CodeModule(TriggerType.MANUAL);
         // IF
         codeModule.createIfElseStatement(condition,
                 List.of(ActionStatement.create(actionFlashlightOff)),
                 List.of(ActionStatement.create(actionFlashlightOn)));
 
         // runtime context
-        MachineContext context = new MachineContext();
+        MachineContext context = new MachineContext("drone");
         context.setActions(actionFlashlightOn, actionFlashlightOff);
         context.setVars(dronePower, droneAmmo);
-        codeModule.checkStatements(context);
+        codeModule.runIfTriggered(context, TriggerType.MANUAL);
     }
 }

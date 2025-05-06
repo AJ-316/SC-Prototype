@@ -1,9 +1,10 @@
 package gameplayHook.CodeModulePackage.components.expressions;
 
 import gameplayHook.MachinePackage.components.MachineContext;
+import gameplayHook.SimUIPackage.SimEventPackage.SimEventsHandler;
 
 public class Variable extends Expression {
-    public String name;
+    private final String name;
     private Object value;
 
     public Variable(String name, Object value) {
@@ -23,5 +24,9 @@ public class Variable extends Expression {
 
     public void setValue(Object value) {
         this.value = value;
+    }
+
+    public String getName() {
+        return name;
     }
 }

@@ -4,6 +4,7 @@ import gameplayHook.CodeModulePackage.components.expressions.Variable;
 import gameplayHook.MachinePackage.components.MachineContext;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Action {
@@ -32,6 +33,10 @@ public class Action {
 
     public String getName() {
         return methodName;
+    }
+
+    public Object[] getArgs() {
+        return arguments.toArray();
     }
 
     public interface ActionMethod {
