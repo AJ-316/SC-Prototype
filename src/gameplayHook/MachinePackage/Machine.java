@@ -16,7 +16,8 @@ public abstract class Machine {
         this.context = new MachineContext(name);
         this.codeModules = new ArrayList<>();
 
-        SimEventsHandler.triggerEvent(SimEventsHandler.EVENT_ON_ADD_MACHINE, context);
+        if(!name.startsWith("_temp_"))
+            SimEventsHandler.triggerEvent(SimEventsHandler.EVENT_ON_ADD_MACHINE, context);
     }
 
     public void executeCodeModules(TriggerType triggerType) {

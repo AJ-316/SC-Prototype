@@ -1,9 +1,7 @@
-package gameplayHook.SimUIPackage;
+package gameplayHook.SimUIPackage.Components;
 
 import com.formdev.flatlaf.ui.FlatLineBorder;
-import gameplayHook.MachinePackage.Machine;
 import gameplayHook.MachinePackage.components.MachineContext;
-import gameplayHook.SimUIPackage.Panels.MachinesPanel;
 import gameplayHook.SimUIPackage.SimEventPackage.SimEventsHandler;
 
 import javax.swing.*;

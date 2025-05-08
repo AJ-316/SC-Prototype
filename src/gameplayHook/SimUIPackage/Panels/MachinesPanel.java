@@ -2,7 +2,7 @@ package gameplayHook.SimUIPackage.Panels;
 
 import com.formdev.flatlaf.ui.FlatLineBorder;
 import gameplayHook.MachinePackage.components.MachineContext;
-import gameplayHook.SimUIPackage.MachineSelectButton;
+import gameplayHook.SimUIPackage.Components.MachineSelectButton;
 import gameplayHook.SimUIPackage.SimEventPackage.SimEventsHandler;
 
 import javax.swing.*;
@@ -18,11 +18,7 @@ public class MachinesPanel extends CustomPanel {
 
         buttonsPanel.setOpaque(false);
 
-        JScrollPane scrollPane = new JScrollPane(buttonsPanel);
-        scrollPane.getViewport().setOpaque(false);
-        scrollPane.getVerticalScrollBar().setUnitIncrement(12);
-        scrollPane.getHorizontalScrollBar().setUnitIncrement(12);
-        scrollPane.setBorder(null);
+        JScrollPane scrollPane = createScrollPane(buttonsPanel, null);
 
         getContainer().add(scrollPane);
         getContainer().setBorder(BorderFactory.createEmptyBorder(0, 20, 20, 20));

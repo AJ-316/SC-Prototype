@@ -1,4 +1,4 @@
-package gameplayHook.SimUIPackage;
+package gameplayHook.SimUIPackage.Components;
 
 import com.formdev.flatlaf.ui.FlatLineBorder;
 

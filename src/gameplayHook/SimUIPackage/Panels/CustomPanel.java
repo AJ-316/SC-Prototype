@@ -1,16 +1,20 @@
 package gameplayHook.SimUIPackage.Panels;
 
+import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.ui.FlatLineBorder;
-import gameplayHook.SimUIPackage.GradientBorder;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import java.awt.*;
 
 public class CustomPanel extends JPanel {
 
-    protected static final Font PLAIN_CONSOLAS = new Font("Consolas", Font.PLAIN, 14);
-    protected static final Font BOLD_CONSOLAS = new Font("Consolas", Font.BOLD, 14);
+    public static final Font PLAIN_CONSOLAS_REG = new Font("Consolas", Font.PLAIN, 14);
+    protected static final Font BOLD_CONSOLAS_REG = new Font("Consolas", Font.BOLD, 14);
+    protected static final Font PLAIN_CONSOLAS_BIG = new Font("Consolas", Font.BOLD, 16);
     private final JPanel container;
+    private final JLabel titleLabel;
+    private final JPanel titleBar;
 
     public CustomPanel(String title, Color bg) {
         setBackground(new Color(1, 1, 1, 0.01f));
@@ -28,13 +32,15 @@ public class CustomPanel extends JPanel {
         container.setOpaque(false);
         container.setBorder(BorderFactory.createEmptyBorder(0, 10, 10, 10));
 
-        JLabel titleLabel = new JLabel(title);
+        titleBar = new JPanel(new BorderLayout());
+        titleBar.setOpaque(false);
+        titleLabel = new JLabel(title);
         titleLabel.setHorizontalAlignment(JLabel.CENTER);
         titleLabel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        super.add(titleLabel, BorderLayout.NORTH);
+        titleBar.add(titleLabel, BorderLayout.CENTER);
+        super.add(titleBar, BorderLayout.NORTH);
         super.add(container, BorderLayout.CENTER);
-
     }
 
     protected String getNumberSpaced(String numStr, int width) {
@@ -47,5 +53,36 @@ public class CustomPanel extends JPanel {
 
     public JPanel getContainer() {
         return container;
+    }
+
+    public static JScrollPane createScrollPane(Component component, Border border) {
+        JScrollPane scrollPane = new JScrollPane(component);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(12);
+        scrollPane.getHorizontalScrollBar().setUnitIncrement(12);
+        scrollPane.setBorder(border);
+        scrollPane.getViewport().setOpaque(false);
+        return scrollPane;
+    }
+
+    public static JTextField getTextField() {
+        JTextField textField = new JTextField();
+        textField.setFont(PLAIN_CONSOLAS_BIG);
+        textField.setBorder(new FlatLineBorder(new Insets(8, 8, 8, 8), new Color(1, 1, 1, 0.2f), 1, 12));
+        return textField;
+    }
+
+    public static JTextPane getTextPane() {
+        JTextPane textPane = new JTextPane();
+        textPane.setFont(PLAIN_CONSOLAS_BIG);
+        textPane.setBorder(new FlatLineBorder(new Insets(8, 8, 8, 8), new Color(1, 1, 1, 0.2f), 1, 12));
+        return textPane;
+    }
+
+    public JLabel getTitle() {
+        return titleLabel;
+    }
+
+    public JPanel getTitleBar() {
+        return titleBar;
     }
 }

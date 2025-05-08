@@ -1,4 +1,4 @@
-package gameplayHook.SimUIPackage;
+package gameplayHook.SimUIPackage.Windows;
 
 import com.formdev.flatlaf.intellijthemes.FlatOneDarkIJTheme;
 import gameplayHook.SimUIPackage.Panels.*;
@@ -11,8 +11,6 @@ public class SimulatorWindow {
 
     public static void init() {
         FlatOneDarkIJTheme.setup();
-        UIManager.put( "[style]Panel.primary",
-                "borderColor: #08f; background: #08f; foreground: #fff" );
         SimulatorWindow simulatorWindow = new SimulatorWindow();
     }
 
@@ -31,10 +29,6 @@ public class SimulatorWindow {
         container.setPreferredSize(new Dimension(1280, 720));
         frame.add(container);
 
-        GridBagConstraints constraints = new GridBagConstraints();
-        constraints.weightx = constraints.weighty = 1;
-        constraints.fill = GridBagConstraints.BOTH;
-        constraints.ipadx = constraints.ipady = 200;
         container.add(createA());
         container.add(createB());
 
@@ -42,6 +36,8 @@ public class SimulatorWindow {
         frame.pack();
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
+
+        DialogWindow.init(frame);
     }
 
     private JPanel createB() {
@@ -85,7 +81,7 @@ public class SimulatorWindow {
 
         EventPanel eventPanel = new EventPanel();
         MachinesPanel machinesPanel = new MachinesPanel();
-        AButtonsPanel buttonsPanel = new AButtonsPanel();
+        GButtonsPanel buttonsPanel = new GButtonsPanel();
 
         constraints.gridx = constraints.gridy = 0;
         constraints.weightx = 1;

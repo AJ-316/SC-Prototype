@@ -29,4 +29,9 @@ public class Variable extends Expression {
     public String getName() {
         return name;
     }
+
+    @Override
+    public String toString() {
+        return "Variable[" + name + "] = " + value.getClass().getSimpleName() + "[" + value + "]";
+    }
 }

@@ -30,7 +30,7 @@ public class EventPanel extends CustomPanel {
 
     public EventPanel() {
         super("Events Timeline", new Color(200, 200, 100));
-        logger.setFont(PLAIN_CONSOLAS);
+        logger.setFont(PLAIN_CONSOLAS_REG);
         logger.setEditable(false);
         logger.setBackground(new Color(19, 21, 25));
         logger.setBorder(new FlatLineBorder(new Insets(0, 0, 5, 20), null));
@@ -38,10 +38,7 @@ public class EventPanel extends CustomPanel {
 
         JPanel wrapper = new JPanel(new BorderLayout());
         wrapper.add(logger);
-        JScrollPane scrollPane = new JScrollPane(wrapper);
-        scrollPane.getVerticalScrollBar().setUnitIncrement(12);
-        scrollPane.getHorizontalScrollBar().setUnitIncrement(12);
-        scrollPane.setBorder(new FlatLineBorder(new Insets(2, 2, 2, 2), new Color(1, 1, 1, 0.35f)));
+        JScrollPane scrollPane = createScrollPane(wrapper, new FlatLineBorder(new Insets(2, 2, 2, 2), new Color(1, 1, 1, 0.35f)));
         scrollPane.setMaximumSize(new Dimension(100, Integer.MAX_VALUE));
 
         getContainer().add(scrollPane, BorderLayout.CENTER);

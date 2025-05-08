@@ -19,9 +19,11 @@ import gameplayHook.MachinePackage.components.MachineContext;
 import gameplayHook.MachinePackage.machines.Door;
 import gameplayHook.MachinePackage.machines.TestMachine;
 import gameplayHook.MachinePackage.machines.Turret;
-import gameplayHook.SimUIPackage.SimulatorWindow;
+import gameplayHook.SimUIPackage.RuntimeCodePackage.RuntimeCodeRunner;
+import gameplayHook.SimUIPackage.Windows.SimulatorWindow;
 
 import java.util.List;
+import java.util.Map;
 
 public class Main {
 
@@ -30,6 +32,50 @@ public class Main {
         example6();
         example7();
         TestMachine testMachine = new TestMachine("TestMachine");
+    }
+
+    /**
+     * Runtime Code create/compile/execute - Example: <br/>
+     * @see #example1()
+     * */
+    private static void example8() {
+        Variable droneAmmo = new Variable("drone.ammo", 20);
+        Constant ammoThreshold = new Constant(20f);
+        BinaryCondition droneAmmoCondition = new BinaryCondition(droneAmmo, ammoThreshold, new KnowledgeToken(OperatorType.EQUALS));
+
+        // IF drone.power > 50
+        Variable dronePower = new Variable("drone.power", 52);
+        Constant powerThreshold = new Constant(50f);
+        BinaryCondition dronePowerCondition = new BinaryCondition(dronePower, powerThreshold, new KnowledgeToken(OperatorType.GREATER_OR_EQUALS));
+
+        CompoundCondition condition = new CompoundCondition(droneAmmoCondition, dronePowerCondition, new KnowledgeToken(OperatorType.AND));
+
+        // action
+        RuntimeCodeRunner codeRunner = new RuntimeCodeRunner(Action.ActionMethod.class);
+        codeRunner.createMethod("drone_flashlight_on", "System.out.println(\"Flashlight Turned ON\");");
+        codeRunner.createMethod("drone_flashlight_off", "System.out.println(\"Flashlight Turned OFF\");");
+        Map<String, Object> compiledActions;
+        try {
+            compiledActions = codeRunner.compileMethods();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        if(compiledActions == null) throw new RuntimeException("CompiledActions is Null");
+
+        Action actionFlashlightOn = new Action("drone.flashlight.on", null, (Action.ActionMethod) compiledActions.get("drone_flashlight_on"));
+        Action actionFlashlightOff = new Action("drone.flashlight.off", null, (Action.ActionMethod) compiledActions.get("drone_flashlight_off"));
+
+        CodeModule codeModule = new CodeModule(TriggerType.MANUAL);
+        // IF
+        codeModule.createIfElseStatement(condition,
+                List.of(ActionStatement.create(actionFlashlightOff)),
+                List.of(ActionStatement.create(actionFlashlightOn)));
+
+        // runtime context
+        MachineContext context = new MachineContext("drone");
+        context.setActions(actionFlashlightOn, actionFlashlightOff);
+        context.setVars(dronePower, droneAmmo);
+        codeModule.runIfTriggered(context, TriggerType.MANUAL);
     }
 
     /**

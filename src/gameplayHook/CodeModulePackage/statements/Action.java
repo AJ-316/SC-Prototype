@@ -43,5 +43,10 @@ public class Action {
         // Might just replace List of variables with the actual Machine Context
         // This can negate the creation of list of variables but will give access to the whole Machine
         void run(List<Variable> arguments);
+
+        // helper method for runtime code execution
+        default Variable getVar(List<Variable> arguments, int index) {
+            return arguments.get(index);
+        }
     }
 }

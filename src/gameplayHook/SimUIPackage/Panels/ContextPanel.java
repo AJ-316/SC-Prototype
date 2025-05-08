@@ -1,7 +1,7 @@
 package gameplayHook.SimUIPackage.Panels;
 
 import gameplayHook.MachinePackage.components.MachineContext;
-import gameplayHook.SimUIPackage.GradientBorder;
+import gameplayHook.SimUIPackage.Components.GradientBorder;
 import gameplayHook.SimUIPackage.SimEventPackage.SimEventsHandler;
 
 import javax.swing.*;
@@ -24,7 +24,7 @@ public abstract class ContextPanel extends CustomPanel {
     public ContextPanel(String name, String emptyContextLabel) {
         super(name, new Color(50, 50, 0));
         noContextLabel.setText(emptyContextLabel);
-        noContextLabel.setFont(BOLD_CONSOLAS);
+        noContextLabel.setFont(BOLD_CONSOLAS_REG);
         noContextLabel.setForeground(new Color(125, 125, 125));
         noContextLabel.setHorizontalAlignment(SwingConstants.CENTER);
         noContextLabel.setMaximumSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
@@ -34,11 +34,8 @@ public abstract class ContextPanel extends CustomPanel {
         actionContainer.setLayout(new BoxLayout(actionContainer, BoxLayout.Y_AXIS));
         actionContainer.add(noContextLabel);
 
-        JScrollPane scrollPane = new JScrollPane(actionContainer);
+        JScrollPane scrollPane = createScrollPane(actionContainer, BorderFactory.createEmptyBorder(10, 10, 10, 10));
         scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        scrollPane.getVerticalScrollBar().setUnitIncrement(12);
-        scrollPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        scrollPane.getViewport().setOpaque(false);
 
         getContainer().add(scrollPane, BorderLayout.CENTER);
 
@@ -88,7 +85,7 @@ public abstract class ContextPanel extends CustomPanel {
         if(isBordered)
             label.setBorder(contextBorder);
 
-        label.setFont(PLAIN_CONSOLAS);
+        label.setFont(PLAIN_CONSOLAS_REG);
         return label;
     }
 
