@@ -11,6 +11,9 @@ public class SimEventsHandler {
     public static final String EVENT_ON_SELECT_MACHINE = "onSelectMachine";
     public static final String EVENT_ON_UPDATE_CONTEXT = "onUpdateContext";
 
+    public static final String EVENT_ON_ATTACH_CM = "onAttachCodeModule";
+    public static final String EVENT_ON_CREATE_CM = "onCreateCodeModule";
+
     public static final String EVENT_ON_DW_CREATE_MACHINE = "onDWCreateMachine";
     private static final Map<String, List<SimEventListener>> eventsMap = new HashMap<>();
 

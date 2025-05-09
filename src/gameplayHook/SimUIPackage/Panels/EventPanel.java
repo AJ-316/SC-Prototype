@@ -100,7 +100,7 @@ public class EventPanel extends CustomPanel {
 
         try {
             doc.insertString(doc.getLength(), text + "\n", style);
-            logger.setCaretPosition(doc.getLength()); // Scroll to bottom
+            logger.setCaretPosition(doc.getLength());
         } catch (BadLocationException e) {
             e.printStackTrace();
         }
@@ -111,7 +111,7 @@ public class EventPanel extends CustomPanel {
 
         try {
             doc.insertString(doc.getLength(), text, style);
-            logger.setCaretPosition(doc.getLength()); // Scroll to bottom
+            logger.setCaretPosition(doc.getLength());
         } catch (BadLocationException e) {
             e.printStackTrace();
         }

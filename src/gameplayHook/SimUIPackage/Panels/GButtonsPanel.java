@@ -12,7 +12,7 @@ public class GButtonsPanel extends CustomPanel {
 
         getContainer().setLayout(new BoxLayout(getContainer(), BoxLayout.Y_AXIS));
         createButton("Create Machine").addActionListener(_ -> SimEventsHandler.triggerEvent(SimEventsHandler.EVENT_ON_DW_CREATE_MACHINE));
-        createButton("Attach Code Module");
+        createButton("Attach Code Module").addActionListener(_ -> SimEventsHandler.triggerEvent(SimEventsHandler.EVENT_ON_CREATE_CM));
     }
 
     private JButton createButton(String name) {

@@ -34,6 +34,10 @@ public class CodeModule {
         }
     }
 
+    public TriggerType getTriggerType() {
+        return triggerType;
+    }
+
     public boolean isTriggerType(TriggerType triggerType) {
         return this.triggerType == triggerType;
     }

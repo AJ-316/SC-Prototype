@@ -58,7 +58,7 @@ public abstract class ContextPanel extends CustomPanel {
         System.out.println(Arrays.toString(context));
 
         if (context == null || context.length == 0) {
-            actionContainer.add(noContextLabel); // ✅ show fallback inside action container
+            actionContainer.add(noContextLabel);
         } else {
             for (String contextData : context) {
                 String[] kv = contextData.split(":");

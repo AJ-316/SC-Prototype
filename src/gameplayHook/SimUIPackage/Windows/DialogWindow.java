@@ -18,6 +18,7 @@ public abstract class DialogWindow extends JDialog {
     public static void init(JFrame owner) {
         DialogWindow.owner = owner;
 
+        SimEventsHandler.subscribeEvent(SimEventsHandler.EVENT_ON_CREATE_CM, _ -> new CreateCodeModule());
         SimEventsHandler.subscribeEvent(SimEventsHandler.EVENT_ON_DW_CREATE_MACHINE, _ -> new CreateMachineDialog());
     }
 
@@ -39,7 +40,8 @@ public abstract class DialogWindow extends JDialog {
         this.submit = new JButton("Submit");
         this.cancel = new JButton("Cancel");
 
-        setOnCancel(_ -> { dispose(); textFields.clear(); });
+        setOnSubmit(_ -> { if (onSubmit()) close(); });
+        setOnCancel(_ -> close());
 
         init();
 
@@ -64,6 +66,9 @@ public abstract class DialogWindow extends JDialog {
     }
 
     protected abstract void init();
+    protected abstract boolean onSubmit();
+
+    protected void close() { dispose(); textFields.clear(); }
 
     protected void setOnSubmit(ActionListener actionListener) {
         submit.addActionListener(actionListener);
@@ -79,6 +84,16 @@ public abstract class DialogWindow extends JDialog {
 
     protected JButton getCancel() {
         return cancel;
+    }
+
+    protected JPanel createField(String labelText, Component component) {
+        JPanel panel = new JPanel(new GridLayout(2, 1));
+        panel.setOpaque(false);
+        panel.add(new JLabel(labelText));
+        panel.add(component);
+        panel.setPreferredSize(new Dimension(180, panel.getPreferredSize().height));
+
+        return panel;
     }
 
     protected JTextComponent addTextComponent(String name, JTextComponent component) {
@@ -110,18 +125,15 @@ public abstract class DialogWindow extends JDialog {
                 if (comp instanceof JButton button) {
                     String accessibleName = button.getAccessibleContext().getAccessibleName();
                     if (accessibleName != null && accessibleName.toLowerCase().contains("close")) {
-                        button.setVisible(false); // Or button.setEnabled(false)
-                        System.out.println("Removed a button: " + accessibleName);
+                        button.setVisible(false);
                     }
                 }
 
                 if (comp instanceof JLabel label) {
                     if (label.getText() != null && label.getText().equals(dw.getTitle())) {
-                        // Optionally, tweak font or padding
-                        label.setBorder(BorderFactory.createEmptyBorder(7, 0, 7, 0)); // top, left, bottom, right
+                        label.setBorder(BorderFactory.createEmptyBorder(7, 0, 7, 0));
                         label.revalidate();
                         label.repaint();
-                        System.out.println("Adjusted title label padding");
                     }
                 }
             }

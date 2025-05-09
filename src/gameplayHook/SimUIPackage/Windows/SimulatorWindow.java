@@ -21,7 +21,7 @@ public class SimulatorWindow {
     public SimulatorWindow() {
         frame = new JFrame("SC_Prototype");
         frame.getRootPane().putClientProperty("FlatLaf.useWindowDecorations", true);
-        frame.setIconImage(new ImageIcon(Objects.requireNonNull(getClass().getResource("/iconLow.png"))).getImage());
+        frame.setIconImage(getIcon("iconLow").getImage());
         frame.setJMenuBar(menuBar = new JMenuBar());
 
         container = new JPanel();
@@ -105,6 +105,10 @@ public class SimulatorWindow {
         partA.add(buttonsPanel, constraints);
 
         return partA;
+    }
+
+    public static ImageIcon getIcon(String icon) {
+        return new ImageIcon(Objects.requireNonNull(SimulatorWindow.class.getResource("/" + icon + ".png")));
     }
 
     private void addMenu(JMenu menu, JMenuItem... menuItems) {

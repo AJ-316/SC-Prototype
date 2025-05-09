@@ -1,16 +1,7 @@
 package gameplayHook.SimUIPackage.RuntimeCodePackage;
 
-import gameplayHook.CodeModulePackage.CodeModule;
-import gameplayHook.CodeModulePackage.components.expressions.Constant;
 import gameplayHook.CodeModulePackage.components.expressions.Variable;
-import gameplayHook.CodeModulePackage.components.expressions.conditonal.BinaryCondition;
-import gameplayHook.CodeModulePackage.components.expressions.conditonal.CompoundCondition;
-import gameplayHook.CodeModulePackage.components.tokens.KnowledgeToken;
-import gameplayHook.CodeModulePackage.components.tokens.OperatorType;
 import gameplayHook.CodeModulePackage.statements.Action;
-import gameplayHook.CodeModulePackage.statements.ActionStatement;
-import gameplayHook.MachinePackage.TriggerType;
-import gameplayHook.MachinePackage.components.MachineContext;
 
 import javax.tools.*;
 import java.io.BufferedReader;
@@ -73,7 +64,7 @@ public class RuntimeCodeRunner {
             throw new IllegalStateException("The Interface is supposed to have one public method");
 
         String fullSource = generateSourceCode(interfaceName, userCode);
-        System.out.println(CodeModule.C_BLUE + fullSource + CodeModule.C_RESET);
+        // System.out.println(CodeModule.C_BLUE + fullSource + CodeModule.C_RESET);
 
         sourcesInMemory.put(interfaceName, new JavaSourceFromString(interfaceName, fullSource));
     }
@@ -132,5 +123,4 @@ public class RuntimeCodeRunner {
         ((Action.ActionMethod) methods.get("PrintVarName")).run(List.of(new Variable("x", 10)));
         ((Action.ActionMethod) methods.get("PrintVarValue")).run(List.of(new Variable("y", 20)));
     }
-
 }

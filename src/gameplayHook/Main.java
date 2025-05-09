@@ -29,8 +29,8 @@ public class Main {
 
     public static void main(String[] args) {
         SimulatorWindow.init();
-        example6();
-        example7();
+        //example6();
+        //example7();
         TestMachine testMachine = new TestMachine("TestMachine");
     }
 

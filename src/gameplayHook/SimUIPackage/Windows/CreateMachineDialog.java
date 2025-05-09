@@ -85,10 +85,9 @@ public class CreateMachineDialog extends DialogWindow {
         createVariable();
 
         codeRunner = new RuntimeCodeRunner(Action.ActionMethod.class);
-        setOnSubmit(_ -> { if(onSubmit()) getCancel().getActionListeners()[0].actionPerformed(null); });
     }
 
-    private boolean onSubmit() {
+    protected boolean onSubmit() {
         String name = getText("machineName");
         if(name.isBlank()) return false;
 
@@ -159,20 +158,16 @@ public class CreateMachineDialog extends DialogWindow {
 
         String trimmed = input.trim().toLowerCase();
 
-        // Check for boolean first
         if (trimmed.equals("true") || trimmed.equals("false")) {
             return Boolean.parseBoolean(trimmed);
         }
 
         try {
-            // Try to parse as Integer
             return Integer.parseInt(input);
         } catch (NumberFormatException e1) {
             try {
-                // Try to parse as Float
                 return Float.parseFloat(input);
             } catch (NumberFormatException e2) {
-                // It's a String
                 return input;
             }
         }
@@ -207,23 +202,6 @@ public class CreateMachineDialog extends DialogWindow {
 
         for (int i = variablesPanel.getComponents().length - 1; i >= 1; i--) {
             if(removeComponent(i, variablesPanel, "Variable", "variableValue")) i -= 1;
-            /*Component panelComp = variableComponents[i - 1];
-            Component strutComp = variableComponents[i];
-
-            if (panelComp instanceof CustomPanel panel) {
-                String key = panel.getTitle().getText().replace("Variable ", "");
-                JTextComponent textComponent = textFields.get("variableName" + key);
-
-                if (textComponent != null && textComponent.getText().isBlank()) {
-                    variablesPanel.remove(strutComp); // remove Box.createVerticalStrut
-                    variablesPanel.remove(panelComp); // remove CustomPanel
-
-                    textFields.remove("variableName" + key);
-                    textFields.remove("variableValue" + key);
-
-                    i -= 1;
-                }
-            }*/
         }
 
         ACTION_COUNTER = 0;
@@ -324,15 +302,5 @@ public class CreateMachineDialog extends DialogWindow {
         variablesPanel.add(Box.createVerticalStrut(5));
 
         revalidate();
-    }
-
-    private JPanel createField(String labelText, Component component) {
-        JPanel panel = new JPanel(new GridLayout(2, 1));
-        panel.setOpaque(false);
-        panel.add(new JLabel(labelText));
-        panel.add(component);
-        panel.setPreferredSize(new Dimension(180, panel.getPreferredSize().height));
-
-        return panel;
     }
 }
